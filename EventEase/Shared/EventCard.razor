@@ -1,0 +1,57 @@
+@using EventEase.Models
+@using EventEase.Services
+@inject SessionStateService SessionService
+
+<div class="card event-card">
+    <div class="card-body">
+        <h5 class="card-title text-primary">@EventData.Title</h5>
+        <h6 class="card-subtitle mb-2 text-muted">
+            <i class="fas fa-calendar-alt"></i> @EventData.Date.ToString("MMM dd, yyyy") | 
+            <i class="fas fa-map-marker-alt"></i> @EventData.Location
+        </h6>
+        <p class="card-text">@EventData.Description</p>
+        
+        <hr />
+        <!-- TWO-WAY DATA BINDING DEMONSTRATION -->
+        <div class="form-group mb-3">
+            <label class="form-label text-secondary" style="font-size: 0.85rem;">Quick Personal Note (Two-way binding):</label>
+            <input type="text" class="form-control form-control-sm" @bind="UserNote" @bind:event="oninput" placeholder="E.g., Remind me to bring a jacket..." />
+        </div>
+        
+        @if (!string.IsNullOrEmpty(UserNote))
+        {
+            <div class="alert alert-info py-1 px-2" style="font-size: 0.85rem;">
+                <strong>Note saved:</strong> @UserNote
+            </div>
+        }
+
+        <button class="btn btn-primary w-100 mt-2" @onclick="AttendEvent" disabled="@IsAttending">
+            @(IsAttending ? "Already Registered" : "RSVP Now")
+        </button>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public EventModel EventData { get; set; } = new();
+
+    // Two-way binding property
+    private string UserNote { get; set; } = string.Empty;
+
+    private bool IsAttending => SessionService.AttendingEvents.Any(e => e.Id == EventData.Id);
+
+    protected override void OnInitialized()
+    {
+        SessionService.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        SessionService.OnChange -= StateHasChanged;
+    }
+
+    private void AttendEvent()
+    {
+        SessionService.RegisterForEvent(EventData);
+    }
+}

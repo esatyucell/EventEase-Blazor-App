@@ -1,0 +1,61 @@
+@page "/register"
+@using EventEase.Models
+@using EventEase.Services
+@inject SessionStateService SessionService
+@inject NavigationManager NavManager
+
+<PageTitle>User Registration | EventEase</PageTitle>
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm p-4">
+                <h3 class="mb-3">EventEase Account Registration</h3>
+                
+                @if (isSubmitted)
+                {
+                    <div class="alert alert-success">
+                        <h4>Registration Successful!</h4>
+                        <p>Welcome, @SessionService.CurrentUser. You can now track your attendance.</p>
+                        <button class="btn btn-outline-primary" @onclick='() => NavManager.NavigateTo("/events")'>View Events</button>
+                    </div>
+                }
+                else
+                {
+                    <EditForm Model="@registrationModel" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator />
+                        
+                        <!-- Optimization: Form Validation Summary -->
+                        <ValidationSummary class="text-danger mb-3" />
+
+                        <div class="mb-3">
+                            <label class="form-label">Full Name</label>
+                            <InputText class="form-control" @bind-Value="registrationModel.FullName" />
+                            <ValidationMessage For="@(() => registrationModel.FullName)" class="text-danger small" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Email Address</label>
+                            <InputText type="email" class="form-control" @bind-Value="registrationModel.Email" />
+                            <ValidationMessage For="@(() => registrationModel.Email)" class="text-danger small" />
+                        </div>
+
+                        <button type="submit" class="btn btn-dark w-100">Register</button>
+                    </EditForm>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private RegistrationFormModel registrationModel = new();
+    private bool isSubmitted = false;
+
+    private void HandleValidSubmit()
+    {
+        // Establish user session
+        SessionService.LoginUser(registrationModel.FullName);
+        isSubmitted = true;
+    }
+}

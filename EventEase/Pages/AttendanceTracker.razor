@@ -1,0 +1,56 @@
+@page "/tracker"
+@using EventEase.Services
+@inject SessionStateService SessionService
+@implements IDisposable
+
+<PageTitle>My Attendance | EventEase</PageTitle>
+
+<div class="container mt-4">
+    <h2><i class="fas fa-clipboard-check text-success"></i> My Attendance Tracker</h2>
+
+    @if (string.IsNullOrEmpty(SessionService.CurrentUser))
+    {
+        <div class="alert alert-warning mt-3">
+            You are not logged in. Please <a href="/register">register</a> to track your events.
+        </div>
+    }
+    else if (!SessionService.AttendingEvents.Any())
+    {
+        <div class="alert alert-info mt-3">
+            Hello @SessionService.CurrentUser! You haven't RSVP'd to any events yet.
+        </div>
+    }
+    else
+    {
+        <p class="text-muted">Welcome back, @SessionService.CurrentUser. Here is your schedule:</p>
+        <ul class="list-group mt-3">
+            @foreach (var ev in SessionService.AttendingEvents)
+            {
+                <li class="list-group-item d-flex justify-content-between align-items-center shadow-sm mb-2">
+                    <div>
+                        <strong>@ev.Title</strong><br />
+                        <small class="text-muted">@ev.Date.ToString("g") - @ev.Location</small>
+                    </div>
+                    <button class="btn btn-sm btn-danger" @onclick="() => Cancel(ev.Id)">Cancel RSVP</button>
+                </li>
+            }
+        </ul>
+    }
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        SessionService.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        SessionService.OnChange -= StateHasChanged;
+    }
+
+    private void Cancel(int id)
+    {
+        SessionService.CancelAttendance(id);
+    }
+}

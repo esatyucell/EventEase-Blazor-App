@@ -1,0 +1,27 @@
+@page "/events"
+@using EventEase.Models
+
+<PageTitle>Upcoming Events | EventEase</PageTitle>
+
+<div class="container mt-4">
+    <h2 class="mb-4">Upcoming Events</h2>
+    
+    <div class="row">
+        @foreach (var ev in mockEvents)
+        {
+            <div class="col-md-4 mb-4">
+                <EventCard EventData="ev" />
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    // Simulated backend data
+    private List<EventModel> mockEvents = new()
+    {
+        new EventModel { Id = 1, Title = "Blazor WebAssembly Workshop", Date = DateTime.Now.AddDays(5), Location = "Tech Hub, Room A", Description = "Learn how to build SPAs with C#.", Capacity = 50 },
+        new EventModel { Id = 2, Title = ".NET Conf 2026", Date = DateTime.Now.AddDays(20), Location = "Main Auditorium", Description = "The biggest .NET event of the year.", Capacity = 500 },
+        new EventModel { Id = 3, Title = "API Security Masterclass", Date = DateTime.Now.AddDays(12), Location = "Online", Description = "Deep dive into securing RESTful APIs.", Capacity = 100 }
+    };
+}
