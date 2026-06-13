@@ -29,4 +29,4 @@ To run this project on your local machine, ensure you have the [.NET SDK](https:
 
 1. Clone the repository:
 ```bash
-   git clone [https://github.com/YOUR-USERNAME/EventEase-Blazor-App.git](https://github.com/YOUR-USERNAME/EventEase-Blazor-App.git)
+   git clone [https://github.com/esatyucell/EventEase-Blazor-App.git](https://github.com/esatyucell/EventEase-Blazor-App.git)
